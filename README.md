@@ -1,2 +1,0 @@
-# CRM Backend setting up
-
