@@ -67,7 +67,8 @@ app.get('/api', (req, res) => {
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+// ✅ CORRECT - proper catch-all for 404s
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: 'Route not found',
@@ -93,8 +94,8 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 API URL: http://localhost:${PORT}`);
-  console.log(`📚 API Documentation: http://localhost:${PORT}/api`);
+  console.log(` Server is running on port ${PORT}`);
+  console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`API URL: http://localhost:${PORT}`);
+  console.log(`API Documentation: http://localhost:${PORT}/api`);
 });

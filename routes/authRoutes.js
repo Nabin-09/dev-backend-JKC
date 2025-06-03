@@ -39,3 +39,4 @@ router.get('/verify', verifyToken, (req, res) => {
 });
 
 export default router;
+
