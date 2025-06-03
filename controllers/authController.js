@@ -6,13 +6,13 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // REGISTER USER
 export const register = async (req, res) => {
-  console.log('📝 Registration attempt started');
-  console.log('📋 Request body:', JSON.stringify(req.body, null, 2));
+  console.log('Registration attempt started');
+  console.log('Request body:', JSON.stringify(req.body, null, 2));
   
   try {
     const { name, email, password, role = 'user', phone } = req.body;
     
-    console.log('📊 Parsed registration data:', {
+    console.log(' Parsed registration data:', {
       name: name || 'MISSING',
       email: email || 'MISSING', 
       passwordLength: password ? password.length : 0,
@@ -22,7 +22,7 @@ export const register = async (req, res) => {
     
     // Validate required fields
     if (!name || !email || !password) {
-      console.log('❌ Validation failed: Missing required fields');
+      console.log(' Validation failed: Missing required fields');
       return res.status(400).json({ 
         success: false, 
         message: 'Name, email, and password are required',
@@ -279,14 +279,14 @@ export const login = (req, res) => {
 
 // GET USER PROFILE (Protected route)
 export const getProfile = (req, res) => {
-  console.log('👤 Profile request for user ID:', req.user.userId);
+  console.log(' Profile request for user ID:', req.user.userId);
   
   db.query(
     'SELECT id, name, email, role, phone, created_at FROM users WHERE id = ?',
     [req.user.userId],
     (err, results) => {
       if (err) {
-        console.error('❌ Database error getting profile:', err);
+        console.error(' Database error getting profile:', err);
         return res.status(500).json({ 
           success: false, 
           message: 'Database error',
@@ -295,14 +295,14 @@ export const getProfile = (req, res) => {
       }
 
       if (results.length === 0) {
-        console.log('❌ User not found for ID:', req.user.userId);
+        console.log(' User not found for ID:', req.user.userId);
         return res.status(404).json({ 
           success: false, 
           message: 'User not found' 
         });
       }
 
-      console.log('✅ Profile retrieved successfully');
+      console.log(' Profile retrieved successfully');
       res.json({
         success: true,
         data: results[0]
@@ -313,14 +313,14 @@ export const getProfile = (req, res) => {
 
 // CHANGE PASSWORD (Protected route)
 export const changePassword = async (req, res) => {
-  console.log('🔐 Password change request for user ID:', req.user.userId);
+  console.log(' Password change request for user ID:', req.user.userId);
   
   try {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user.userId;
 
     if (!currentPassword || !newPassword) {
-      console.log('❌ Password change validation failed: Missing passwords');
+      console.log(' Password change validation failed: Missing passwords');
       return res.status(400).json({
         success: false,
         message: 'Current password and new password are required'
@@ -328,7 +328,7 @@ export const changePassword = async (req, res) => {
     }
 
     if (newPassword.length < 6) {
-      console.log('❌ New password too short');
+      console.log(' New password too short');
       return res.status(400).json({
         success: false,
         message: 'New password must be at least 6 characters long'
@@ -340,7 +340,7 @@ export const changePassword = async (req, res) => {
     // Get current user data
     db.query('SELECT password FROM users WHERE id = ?', [userId], async (err, results) => {
       if (err) {
-        console.error('❌ Database error during password change:', err);
+        console.error(' Database error during password change:', err);
         return res.status(500).json({
           success: false,
           message: 'Database error',
@@ -349,7 +349,7 @@ export const changePassword = async (req, res) => {
       }
 
       if (results.length === 0) {
-        console.log('❌ User not found during password change');
+        console.log(' User not found during password change');
         return res.status(404).json({
           success: false,
           message: 'User not found'
@@ -363,19 +363,19 @@ export const changePassword = async (req, res) => {
         const isCurrentPasswordValid = await bcrypt.compare(currentPassword, results[0].password);
         
         if (!isCurrentPasswordValid) {
-          console.log('❌ Current password verification failed');
+          console.log(' Current password verification failed');
           return res.status(401).json({
             success: false,
             message: 'Current password is incorrect'
           });
         }
 
-        console.log('🔐 Hashing new password...');
+        console.log(' Hashing new password...');
         
         // Hash new password
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-        console.log('💾 Updating password in database...');
+        console.log(' Updating password in database...');
 
         // Update password
         db.query(
@@ -383,7 +383,7 @@ export const changePassword = async (req, res) => {
           [hashedNewPassword, userId],
           (err, result) => {
             if (err) {
-              console.error('❌ Database error updating password:', err);
+              console.error(' Database error updating password:', err);
               return res.status(500).json({
                 success: false,
                 message: 'Failed to update password',
@@ -391,7 +391,7 @@ export const changePassword = async (req, res) => {
               });
             }
 
-            console.log('✅ Password changed successfully for user ID:', userId);
+            console.log(' Password changed successfully for user ID:', userId);
             res.json({
               success: true,
               message: 'Password changed successfully'
@@ -400,7 +400,7 @@ export const changePassword = async (req, res) => {
         );
 
       } catch (error) {
-        console.error('❌ Password change error:', error);
+        console.error(' Password change error:', error);
         res.status(500).json({
           success: false,
           message: 'Internal server error',
@@ -410,7 +410,7 @@ export const changePassword = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Change password error (outer catch):', error);
+    console.error(' Change password error (outer catch):', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
