@@ -33,7 +33,7 @@ export const register = async (req, res) => {
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      console.log('❌ Validation failed: Invalid email format');
+      console.log(' Validation failed: Invalid email format');
       return res.status(400).json({ 
         success: false, 
         message: 'Please provide a valid email address' 
@@ -42,22 +42,22 @@ export const register = async (req, res) => {
 
     // Validate password length
     if (password.length < 6) {
-      console.log('❌ Validation failed: Password too short');
+      console.log(' Validation failed: Password too short');
       return res.status(400).json({ 
         success: false, 
         message: 'Password must be at least 6 characters long' 
       });
     }
 
-    console.log('✅ Input validation passed');
-    console.log('🔍 Checking if user already exists...');
+    console.log(' Input validation passed');
+    console.log(' Checking if user already exists...');
 
     // Check if user already exists
     const checkUserQuery = 'SELECT id FROM users WHERE email = ?';
     
     db.query(checkUserQuery, [email], async (err, results) => {
       if (err) {
-        console.error('❌ Database error during user check:', err);
+        console.error(' Database error during user check:', err);
         return res.status(500).json({ 
           success: false, 
           message: 'Database error during registration',
@@ -65,13 +65,13 @@ export const register = async (req, res) => {
         });
       }
 
-      console.log('📊 User existence check result:', {
+      console.log(' User existence check result:', {
         found: results.length > 0,
         count: results.length
       });
 
       if (results.length > 0) {
-        console.log('❌ User already exists with email:', email);
+        console.log(' User already exists with email:', email);
         return res.status(400).json({ 
           success: false, 
           message: 'User with this email already exists' 
@@ -79,20 +79,20 @@ export const register = async (req, res) => {
       }
 
       try {
-        console.log('🔐 Hashing password...');
+        console.log(' Hashing password...');
         
         // Hash password
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         
-        console.log('✅ Password hashed successfully');
-        console.log('💾 Inserting new user into database...');
+        console.log(' Password hashed successfully');
+        console.log(' Inserting new user into database...');
 
         // Insert new user
         const insertQuery = 'INSERT INTO users (name, email, password, role, phone) VALUES (?, ?, ?, ?, ?)';
         const insertValues = [name, email, hashedPassword, role, phone];
         
-        console.log('📝 Insert query values:', {
+        console.log('Insert query values:', {
           name,
           email,
           passwordHashed: true,
