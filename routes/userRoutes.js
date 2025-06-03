@@ -1,8 +1,18 @@
-const express = require('express');
+import express from 'express';
+import { getUsers, getLeads, getUserById } from '../controllers/userController.js';
+import { verifyToken, verifyAdmin, verifyRole, verifyOwnership } from '../middleware/auth.js';
+
 const router = express.Router();
-const { getUsers, getLeads } = require('../controllers/userController');
 
-router.get('/users', getUsers);
-router.get('/leads', getLeads);
+// Protected routes - require authentication
+router.get('/users', verifyToken, getUsers);
+router.get('/users/:id', verifyToken, verifyOwnership, getUserById);
+router.get('/leads', verifyToken, getLeads);
 
-module.exports = router;
+// Admin only routes
+router.get('/admin/users', verifyToken, verifyAdmin, getUsers);
+
+// Role-based access examples
+router.get('/manager/leads', verifyToken, verifyRole(['admin', 'manager']), getLeads);
+
+export default router;
