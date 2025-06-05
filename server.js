@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import productRoutes from './routes/productRoutes.js'; // 👈 Added
 import './config/db.js'; // Initialize database connection
 
 // Load environment variables
@@ -25,12 +26,13 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/api/auth', authRoutes);  // Authentication routes
-app.use('/api', userRoutes);       // Protected user routes
+app.use('/api/auth', authRoutes);    // Authentication routes
+app.use('/api', userRoutes);         // User routes
+app.use('/api', productRoutes);      // 👈 Product and variant routes
 
 // Health check route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     success: true,
     message: 'CRM API is running!',
     data: {
@@ -60,6 +62,20 @@ app.get('/api', (req, res) => {
           getAllUsers: 'GET /api/users',
           getUserById: 'GET /api/users/:id',
           getAllLeads: 'GET /api/leads'
+        },
+        products: {
+          create: 'POST /api/products',
+          getAll: 'GET /api/products',
+          getById: 'GET /api/products/:id',
+          update: 'PUT /api/products/:id',
+          delete: 'DELETE /api/products/:id'
+        },
+        variants: {
+          create: 'POST /api/products/:productId/variants',
+          getAllForProduct: 'GET /api/products/:productId/variants',
+          getById: 'GET /api/variants/:id',
+          update: 'PUT /api/variants/:id',
+          delete: 'DELETE /api/variants/:id'
         }
       }
     }
@@ -67,7 +83,6 @@ app.get('/api', (req, res) => {
 });
 
 // 404 handler
-// ✅ CORRECT - proper catch-all for 404s
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -92,7 +107,6 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
   console.log(` Server is running on port ${PORT}`);
   console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
